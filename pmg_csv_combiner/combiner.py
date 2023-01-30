@@ -26,7 +26,8 @@ def combine(*fds: io.TextIOWrapper) -> Iterator[str]:
 
     columns: list[str] = []
     for reader in readers:
-        columns += reader.fieldnames
+        if reader.fieldnames is not None:
+            columns += reader.fieldnames
     columns = list(dict.fromkeys(columns))
     columns.append(CSV_COLUMN_FILENAME)
 
