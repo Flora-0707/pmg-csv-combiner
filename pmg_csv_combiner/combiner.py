@@ -9,6 +9,11 @@ CSV_COLUMN_FILENAME = "filename"
 
 
 class _InternalBuffer:
+    '''
+    Buffer to retrieve CSV writer rows.
+    Each call to `write` overwrites the current content.
+    '''
+
     def __init__(self) -> None:
         self._data: str = ""
 
@@ -22,6 +27,11 @@ class _InternalBuffer:
 
 
 def combine(*fds: io.TextIOWrapper) -> Iterator[str]:
+    '''
+    Combines CSV files.
+    The function returns a generator in which each value corresponds to a row.
+    Each input must be an object which supports the iterator protocol.
+    '''
     readers = [csv.DictReader(fd, doublequote=False, escapechar='\\') for fd in fds]
 
     columns: list[str] = []
@@ -52,6 +62,9 @@ def combine(*fds: io.TextIOWrapper) -> Iterator[str]:
 
 
 def combine_files(srcs: Iterator[str]) -> Iterator[str]:
+    '''
+    Wrapper for `combine` to handle file names input.
+    '''
     with ExitStack() as stack:
         fds = [stack.enter_context(open(src, newline='')) for src in srcs]
         for line in combine(*fds):
